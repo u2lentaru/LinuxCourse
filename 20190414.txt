@@ -1,0 +1,46 @@
+1. Установить в виртуальную машину или VDS Docker, сделать два контейнера, один для Nginx, второй для MySQL, настроить совместную работу. 
+Если вы изучаете программирование на PHP, Python или Java, используйте их в проектах для работы с БД. 
+Если вы изучаете системное администрирование, тестирование или информационную безопасность, воспользуйтесь PHP и несложной CMS, 
+например, WordPress.
+
+Срок сдачи до: 15 апр., 22:00 +05:00
+
+sudo apt-get update
+sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" | sudo tee /etc/apt/sources.list.d/docker.list
+sudo apt-get update
+apt-cache policy docker-engine
+sudo apt-get install -y docker-engine
+sudo systemctl status docker
+sudo docker run hello-world
+sudo docker search nginx
+sudo docker pull nginx
+sudo docker run -d --name nginx -p 80:80 -v /var/www/html/project/:/usr/share/nginx/html nginx
+
+php.ini:
+cgi.fix_pathinfo=0
+
+default.conf:
+раскомментируем location ~ \.php$
+root /usr/share/nginx/html
+fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+fastcgi_param заменяем /scripts на $document_root
+location / 	добавить index.php
+
+/var/log/nginx - удалить логи
+
+sudo docker pull mariadb
+sudo docker run -d --name mysql -e MYSQL_ROOT_PASSWDORD=password mariadb
+sudo apt install phpmyadmin -y
+
+config-db.php
+$dbuser='root';
+$dbpass='password';
+$basepath='';
+$dbname='mysql';
+$dbserver='172.17.0.3';
+$dbport='3306';
+$dbtype='mysql';
+
+sudo docker pull wordpress
+sudo docker run --name wordpress --link mysql:mysql -e WORDPRESS_DB_PASSWORD=password -d wordpress
